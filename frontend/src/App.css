@@ -1,17 +1,36 @@
-/* App.css */
+@font-face {
+  font-family: 'Pretendard-Regular';
+  src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+}
+
+* {
+  font-family: 'Pretendard-Regular';
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+}
 .App {
   text-align: center;
   font-family: Arial, sans-serif;
+  height: 100%;
+}
+
+.err {
+  color: white;
 }
 .banner {
   width: 100%;
-  height: 200px;
+  height: 199px;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  text-shadow: 4px 4px 4px rgba(0, 0, 0, 0.5);
   margin-bottom: 20px;
   overflow: hidden;
 }
@@ -24,12 +43,13 @@
   top: 0;
   left: 0;
   z-index: 1;
+  mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
 }
 
 .banner-placeholder {
   width: 100%;
   height: 200px;
-  background-color: #007bff;
+  /* background-color: #007bff; */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -40,7 +60,6 @@
 
 .banner-overlay {
   z-index: 2;
-  position: relative;
 }
 
 input {
@@ -55,7 +74,8 @@ button {
   cursor: pointer;
   background-color: #007bff;
   color: white;
-  border: none;
+  border-color: #ffffff;
+  /* border:none; */
   border-radius: 5px;
 }
 
@@ -97,38 +117,62 @@ td img {
   height: auto;;
 }
 
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.dateLabel {
+  display: none;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+.footer {
+  margin-top: auto; /* Push the footer to the bottom */
+  padding: 20px; /* Add some padding */
+  text-align: center; /* Center the text */
+  background: rgba(255, 255, 255, 0.5); /* White with 50% opacity */
+  color: #333; /* Dark text color for contrast */
+  position: relative;
+  bottom: 0;
+  width: 100%; /* Full width */
+}
+
+/* Styles for mobile screens */
+@media screen and (max-width: 650px) {
+  thead {
+      display: none; /* Hide table header */
   }
-}
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+  tbody, tr {
+      display: block; /* Make tbody and tr block elements */
   }
-  to {
-    transform: rotate(360deg);
+
+  tr {
+      margin-bottom: 10px; /* Add space between rows */
+      border: 1px solid #ddd; /* Optional: border for clarity */
+  }
+
+  td {
+      display: block; /* Make each cell block */
+      text-align: left; /* Align text left */
+      padding: 10px;
+      border-top: 1px solid #ddd; /* Optional: top border */
+  }
+
+  .dateLabel {
+    display:block;
+  }
+
+  td::before {
+      content: attr(data-label);
+      font-weight: bold;
+      display: block;
+      margin-bottom: 5px;
+  }
+
+  .content {
+      display: flex;
+      align-items: center; /* Align items vertically centered */
+      justify-content: center; /* Align items to the start of the container */
+  }
+
+  .content img {
+      margin-right: 30px; /* Add some space between the image and the text */
+      width: 80px;
   }
 }

@@ -1,27 +1,39 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import axios from "axios";
 import ColorThief from "colorthief";
 import "./App.css";
 
 function App() {
     const [city, setCity] = useState("");
+    const [latitude, setLatitude] = useState(null);
+    const [longitude, setLongitude] = useState(null);
     const [weather, setWeather] = useState(null);
     const [error, setError] = useState(null);
     const [bannerColor, setBannerColor] = useState(null);
     const bannerRef = useRef();
 
-    const getWeather = async () => {
+    const getWeather = useCallback(async () => {
         try {
-            const response = await axios.get(
-                `http://localhost:3000/weather?city=${city}`
-            );
+            let response;
+            if (city) {
+                response = await axios.get(
+                    `http://localhost:3000/weather?city=${city}`
+                );
+            } else if (latitude && longitude) {
+                response = await axios.get(
+                    `http://localhost:3000/weather?lat=${latitude}&lon=${longitude}`
+                );
+            } else {
+                setError("Please provide a city or allow location access.");
+                return;
+            }
             setWeather(response.data);
             setError(null);
         } catch (err) {
             setError("Error fetching weather data");
             setWeather(null);
         }
-    };
+    }, [city, latitude, longitude]);
 
     const getDayName = (dateStr) => {
         const date = new Date(dateStr);
@@ -38,11 +50,6 @@ function App() {
 
     const getCustomIconUrl = (iconCode) => `/weather-icons/${iconCode}.png`;
 
-    // const getIconUrl = (iconCode) =>
-    //     `http://localhost:4000/proxy?url=${encodeURIComponent(
-    //         `https://www.weatherbit.io/static/img/icons/${iconCode}.png`
-    //     )}`;
-
     useEffect(() => {
         if (bannerRef.current && weather) {
             const img = bannerRef.current;
@@ -57,13 +64,51 @@ function App() {
         }
     }, [weather]);
 
+    useEffect(() => {
+        if (!city) {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const { latitude, longitude } = position.coords;
+                        setLatitude(latitude);
+                        setLongitude(longitude);
+                    },
+                    (err) => {
+                        setError("Error getting location: " + err.message);
+                    }
+                );
+            } else {
+                setError("Geolocation is not supported by this browser.");
+            }
+        }
+    }, [city]);
+
+    useEffect(() => {
+        if (latitude && longitude) {
+            getWeather();
+        }
+    }, [latitude, longitude, getWeather]);
+
+    const handleCityChange = (e) => {
+        setCity(e.target.value);
+        setLatitude(null);
+        setLongitude(null);
+    };
+
+    const currentHour = new Date().getHours();
+    const isNight = currentHour >= 18 || currentHour < 6;
+
     const bannerStyle = bannerColor
         ? {
               backgroundImage: `linear-gradient(to bottom, rgb(${bannerColor.join(
                   ","
-              )}) 20%, white 100%)`,
+              )}) 10%, ${isNight ? "black" : "white"} 100%)`,
           }
-        : {};
+        : {
+              backgroundImage: `linear-gradient(to bottom, ${
+                  isNight ? "#3A62DF" : "#007bff"
+              } 20%, ${isNight ? "black" : "white"} 100%)`, // Default gradient color
+          };
 
     return (
         <div className='App' style={bannerStyle}>
@@ -73,22 +118,25 @@ function App() {
                         src={getCustomIconUrl(weather.data[0].weather.icon)}
                         alt={weather.data[0].weather.description}
                         ref={bannerRef}
-                        className='banner-img'
                     />
                     <div className='banner-overlay'>
                         <h1>Weather App</h1>
                     </div>
                 </div>
             )}
-            {!weather && <h1 className='banner-placeholder'>Weather App</h1>}
+            {!weather && (
+                <div className='banner'>
+                    <h1 className='banner-placeholder'>Weather App</h1>
+                </div>
+            )}
             <input
                 type='text'
                 value={city}
-                onChange={(e) => setCity(e.target.value)}
+                onChange={handleCityChange}
                 placeholder='Enter city'
             />
             <button onClick={getWeather}>Get Weather</button>
-            {error && <p>{error}</p>}
+            {error && <p className='err'>{error}</p>}
             {weather && (
                 <div>
                     <h2>Weather in {weather.city_name}</h2>
@@ -110,14 +158,25 @@ function App() {
                             <tr>
                                 {weather.data.slice(1).map((day, index) => (
                                     <td key={index}>
-                                        <img
-                                            src={getIconUrl(day.weather.icon)}
-                                            alt={day.weather.description}
-                                        />
-                                        <p>
-                                            {day.weather.description},{" "}
-                                            {day.temp}°C
-                                        </p>
+                                        <td
+                                            className='dateLabel'
+                                            data-label='Date'
+                                        >
+                                            {getDayName(day.valid_date)}
+                                        </td>
+                                        <div className='content'>
+                                            <img
+                                                src={getIconUrl(
+                                                    day.weather.icon
+                                                )}
+                                                alt={day.weather.description}
+                                            />
+                                            <div>
+                                                <p>{day.weather.description}</p>
+                                                <p>High: {day.temp}°C</p>
+                                                <p>Low: {day.min_temp}°C</p>
+                                            </div>
+                                        </div>
                                     </td>
                                 ))}
                             </tr>
@@ -125,6 +184,9 @@ function App() {
                     </table>
                 </div>
             )}
+            <footer className='footer'>
+                <p>Daniel Chung © 2024</p>
+            </footer>
         </div>
     );
 }
