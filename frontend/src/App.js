@@ -1,6 +1,11 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import axios from "axios";
 import ColorThief from "colorthief";
+import Banner from "./component/Banner";
+import CityInput from "./component/CityInput";
+import WeatherDetails from "./component/WeatherDetails";
+import ForecastTable from "./component/ForecastTable";
+import Footer from "./component/Footer";
 import "./App.css";
 
 function App() {
@@ -13,7 +18,7 @@ function App() {
     const bannerRef = useRef();
 
     const currentHour = new Date().getHours();
-    const [manualToggle, setManualToggle] = useState(null); // null means no manual toggle applied
+    const [manualToggle, setManualToggle] = useState(null);
 
     const getWeather = useCallback(async () => {
         try {
@@ -37,21 +42,6 @@ function App() {
             setWeather(null);
         }
     }, [city, latitude, longitude]);
-
-    const getDayName = (dateStr) => {
-        const date = new Date(dateStr);
-        return date.toLocaleDateString("en-AU", {
-            weekday: "long",
-            day: "2-digit",
-            month: "2-digit",
-            year: "2-digit",
-        });
-    };
-
-    const getIconUrl = (iconCode) =>
-        `https://www.weatherbit.io/static/img/icons/${iconCode}.png`;
-
-    const getCustomIconUrl = (iconCode) => `/weather-icons/${iconCode}.png`;
 
     useEffect(() => {
         if (bannerRef.current && weather) {
@@ -136,91 +126,21 @@ function App() {
 
     return (
         <div className='App' style={bannerStyle}>
-            {weather && (
-                <div className='banner'>
-                    <img
-                        src={getCustomIconUrl(weather.data[0].weather.icon)}
-                        alt={weather.data[0].weather.description}
-                        ref={bannerRef}
-                    />
-                    <div className='banner-overlay'>
-                        <h1>Weather App</h1>
-                    </div>
-                </div>
-            )}
-            {!weather && (
-                <div className='banner'>
-                    <h1 className='banner-placeholder'>Weather App</h1>
-                </div>
-            )}
-            <div>
-                <input
-                    type='text'
-                    value={city}
-                    onChange={handleCityChange}
-                    placeholder='Enter city'
-                />
-
-                <button onClick={getWeather}>Get Weather</button>
-                <button
-                    className='darkmode'
-                    onClick={() => setManualToggle((prev) => !prev)}
-                >
-                    ☼
-                </button>
-            </div>
-
+            <Banner weather={weather} bannerRef={bannerRef} />
+            <CityInput
+                city={city}
+                handleCityChange={handleCityChange}
+                getWeather={getWeather}
+                setManualToggle={setManualToggle}
+            />
             {error && <p className='err'>{error}</p>}
             {weather && (
-                <div>
-                    <h2>Weather in {weather.city_name}</h2>
-                    <p>{weather.data[0].weather.description}</p>
-                    <p>Temperature: {weather.data[0].temp}°C</p>
-                    <p>Wind Speed: {weather.data[0].wind_spd} m/s</p>
-                    <h3>7-Day Forecast</h3>
-                    <table border='1'>
-                        <thead>
-                            <tr>
-                                {weather.data.slice(1).map((day, index) => (
-                                    <th key={index}>
-                                        {getDayName(day.valid_date)}
-                                    </th>
-                                ))}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                {weather.data.slice(1).map((day, index) => (
-                                    <td key={index}>
-                                        <td
-                                            className='dateLabel'
-                                            data-label='Date'
-                                        >
-                                            {getDayName(day.valid_date)}
-                                        </td>
-                                        <div className='content'>
-                                            <img
-                                                src={getIconUrl(
-                                                    day.weather.icon
-                                                )}
-                                                alt={day.weather.description}
-                                            />
-                                            <div>
-                                                <p>{day.weather.description}</p>
-                                                <p>High: {day.temp}°C</p>
-                                                <p>Low: {day.min_temp}°C</p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                ))}
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                <>
+                    <WeatherDetails weather={weather} />
+                    <ForecastTable weather={weather} />
+                </>
             )}
-            <footer className='footer'>
-                <p>Daniel Chung © 2024</p>
-            </footer>
+            <Footer />
         </div>
     );
 }
