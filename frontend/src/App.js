@@ -12,6 +12,9 @@ function App() {
     const [bannerColor, setBannerColor] = useState(null);
     const bannerRef = useRef();
 
+    const currentHour = new Date().getHours();
+    const [manualToggle, setManualToggle] = useState(null); // null means no manual toggle applied
+
     const getWeather = useCallback(async () => {
         try {
             let response;
@@ -95,19 +98,40 @@ function App() {
         setLongitude(null);
     };
 
-    const currentHour = new Date().getHours();
     const isNight = currentHour >= 18 || currentHour < 6;
 
     const bannerStyle = bannerColor
         ? {
               backgroundImage: `linear-gradient(to bottom, rgb(${bannerColor.join(
                   ","
-              )}) 10%, ${isNight ? "black" : "white"} 100%)`,
+              )}) 10%, ${
+                  manualToggle !== null
+                      ? manualToggle
+                          ? "black"
+                          : "white"
+                      : isNight
+                      ? "black"
+                      : "white"
+              } 100%)`,
           }
         : {
               backgroundImage: `linear-gradient(to bottom, ${
-                  isNight ? "#3A62DF" : "#007bff"
-              } 20%, ${isNight ? "black" : "white"} 100%)`, // Default gradient color
+                  manualToggle !== null
+                      ? manualToggle
+                          ? "#3A62DF"
+                          : "#007bff"
+                      : isNight
+                      ? "#3A62DF"
+                      : "#007bff"
+              } 20%, ${
+                  manualToggle !== null
+                      ? manualToggle
+                          ? "black"
+                          : "white"
+                      : isNight
+                      ? "black"
+                      : "white"
+              } 100%)`, // Default gradient color
           };
 
     return (
@@ -129,13 +153,23 @@ function App() {
                     <h1 className='banner-placeholder'>Weather App</h1>
                 </div>
             )}
-            <input
-                type='text'
-                value={city}
-                onChange={handleCityChange}
-                placeholder='Enter city'
-            />
-            <button onClick={getWeather}>Get Weather</button>
+            <div>
+                <input
+                    type='text'
+                    value={city}
+                    onChange={handleCityChange}
+                    placeholder='Enter city'
+                />
+
+                <button onClick={getWeather}>Get Weather</button>
+                <button
+                    className='darkmode'
+                    onClick={() => setManualToggle((prev) => !prev)}
+                >
+                    ☼
+                </button>
+            </div>
+
             {error && <p className='err'>{error}</p>}
             {weather && (
                 <div>
