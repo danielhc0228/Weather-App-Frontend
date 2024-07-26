@@ -13,8 +13,16 @@ https://weatherappdchung.netlify.app/
 
 Demo:
 Desktop:
-![image](https://github.com/user-attachments/assets/4378d7d6-af65-4440-beda-78b9002b0ec4)
-![image](https://github.com/user-attachments/assets/e895fa7e-0f74-477a-bef7-c8d679af8f7b)
+
+bright day:
+![image](https://github.com/user-attachments/assets/b647b7a8-cfa0-4be6-bae6-bedb3bfdc7a7)
+
+rainy day:
+![image](https://github.com/user-attachments/assets/cfc6945c-4516-4319-bd95-cbbe6b62e859)
+
+darkmode:
+![image](https://github.com/user-attachments/assets/60cd559e-56cf-42ab-b2ac-8f1d0e34014f)
+
 
 Mobile:
 ![image](https://github.com/user-attachments/assets/056812a7-8f3a-4b13-a486-a543a3cc71d1)
