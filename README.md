@@ -5,13 +5,16 @@ It displays the weather data based on your location and the location you input.
 The background image and colour changes as the weather changes, and the dark mode is activated by the current time and by toggling a button.
 Separate background images are used for night times and day times.
 
-API key not included so it will produce error.
-Add your own API key in the App.js and run server.js in backend folder to make it work.
+It is mobile friendly.
+
+The API key is on a free plan so if the weather data is not showing then the daily request limit is exceeded.
 
 Link to the website:
 https://weatherappdchung.netlify.app/
 
-Demo:
+Server deployed at Render.
+
+Demo Images:
 Desktop:
 
 bright day:
