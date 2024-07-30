@@ -25,11 +25,11 @@ function App() {
             let response;
             if (city) {
                 response = await axios.get(
-                    `http://localhost:3000/weather?city=${city}`
+                    `https://weather-app-backend-4wuu.onrender.com/weather?city=${city}`
                 );
             } else if (latitude && longitude) {
                 response = await axios.get(
-                    `http://localhost:3000/weather?lat=${latitude}&lon=${longitude}`
+                    `https://weather-app-backend-4wuu.onrender.com/weather?lat=${latitude}&lon=${longitude}`
                 );
             } else {
                 setError("Please provide a city or allow location access.");
