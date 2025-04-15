@@ -7,6 +7,7 @@ Separate background images are used for night times and day times.
 
 It is mobile friendly.
 
+API retrived from Weatherbit.io. 
 The API key is on a free plan so if the weather data is not showing then the daily request limit is exceeded.
 
 Link to the website:
